@@ -14,7 +14,7 @@ class LearningAgent(Agent):
         
 	# TODO: Initialize any additional variables here
 	self.gamma = 1
-	self.epsilon = 0.5
+	self.epsilon = 1
 	self.alpha = 1
 	self.QTable = {}
 
@@ -23,7 +23,7 @@ class LearningAgent(Agent):
         
 	# TODO: Prepare for a new trip; reset any variables here, if required
 	self.gamma = 1
-	self.epsilon = 0.01
+	self.epsilon = 1
 	self.alpha = 1
 
     def update(self, t):
