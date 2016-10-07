@@ -41,9 +41,14 @@ class LearningAgent(Agent):
 	# TODO: Select action according to your policy 
 	values = self.QTable[self.state].values()	
 	max_value = max(values)
-	best_actions = [action for action in self.QTable[self.state].keys() if self.QTable[action] == max_value]	
+	best_actions = [action for action in self.QTable[self.state].keys() if self.QTable[self.state][action] == max_value]	
+	print(values)
 	if random.random() < self.epsilon:
 		#TODO: implement static epsilon method
+		random_values = [0.15*max_value, 0.30*max_value, 0.45*max_value, 0.60*max_value]
+		random.shuffle(random_values)
+		values = [v+random_values.pop() for v in values]
+		print(values)
 		action = random.choice([None, 'left', 'right', 'forward'])
 		print("Random")
 	else:
