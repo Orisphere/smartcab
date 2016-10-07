@@ -50,7 +50,7 @@ class LearningAgent(Agent):
 		random.shuffle(random_values)
 		new_values = [v+random_values.pop() for v in values]
 		max_v = max(new_values)
-		index = random_values.index(max_v)
+		index = new_values.index(max_v)
 		action = actions[index]
 		print("Random")
 	else:
