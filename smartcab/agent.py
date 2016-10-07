@@ -14,7 +14,7 @@ class LearningAgent(Agent):
         
 	# TODO: Initialize any additional variables here
 	self.gamma = 1
-	self.epsilon = 1
+	self.epsilon = 0.1
 	self.alpha = 1
 	self.QTable = {}
 
@@ -22,9 +22,9 @@ class LearningAgent(Agent):
         self.planner.route_to(destination)
         
 	# TODO: Prepare for a new trip; reset any variables here, if required
-	self.gamma = 1
-	self.epsilon = 1
-	self.alpha = 1
+	#self.gamma = 1
+	#self.epsilon = 0.1
+	#self.alpha = 1
 
     def update(self, t):
         # Gather inputs
@@ -39,16 +39,23 @@ class LearningAgent(Agent):
 		self.QTable[self.state] = {None: 10, 'left': 10, 'right': 10, 'forward': 10}
 	
 	# TODO: Select action according to your policy 
+	values = self.QTable[self.state].values()	
+	max_value = max(values)
+	best_actions = [action for action in self.QTable[self.state].keys() if self.QTable[self.state][action] == max_value]	
 	if random.random() < self.epsilon:
+		#TODO: implement static epsilon method
 		action = random.choice([None, 'left', 'right', 'forward'])
+		print("Random")
 	else:
-		action = max(zip(self.QTable[self.state].values(), self.QTable[self.state].keys()))[1]
+		#TODO: implement handling of case where there is more than one of equal value	
+		action = random.choice(best_actions)
+		print("Not random")
         
 	# Execute action and get reward
         reward = self.env.act(self, action)
 
         # TODO: Learn policy based on state, action, reward
-	q_prime = max(zip(self.QTable[self.state].values(), self.QTable[self.state].keys()))[0]
+	q_prime = max(self.QTable[self.state].values())
 	old_q = self.QTable[self.state][action]
 	self.QTable[self.state][action] = old_q + self.alpha*(reward + self.gamma*q_prime - old_q) 
 	print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
