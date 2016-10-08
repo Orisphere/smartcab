@@ -43,7 +43,6 @@ class LearningAgent(Agent):
 	values = self.QTable[self.state].values()	
 	max_value = max(values)
 	best_actions = [action for action in self.QTable[self.state].keys() if self.QTable[self.state][action] == max_value]	
-	print(values)
 	if random.random() < self.epsilon:
 		#TODO: implement static epsilon method
 		random_values = [0.15*max_value, 0.30*max_value, 0.45*max_value, 0.60*max_value]
@@ -52,11 +51,9 @@ class LearningAgent(Agent):
 		max_v = max(new_values)
 		index = new_values.index(max_v)
 		action = actions[index]
-		print("Random")
 	else:
 		#TODO: implement handling of case where there is more than one of equal value	
 		action = random.choice(best_actions)
-		print("Not random")
         
 	# Execute action and get reward
         reward = self.env.act(self, action)
@@ -65,7 +62,7 @@ class LearningAgent(Agent):
 	q_prime = max(self.QTable[self.state].values())
 	old_q = self.QTable[self.state][action]
 	self.QTable[self.state][action] = old_q + self.alpha*(reward + self.gamma*q_prime - old_q) 
-	print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
+	#print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
 
 
 def run():
@@ -78,7 +75,7 @@ def run():
     # NOTE: You can set enforce_deadline=False while debugging to allow longer trials
 
     # Now simulate it
-    sim = Simulator(e, update_delay=0.5, display=True)  # create simulator (uses pygame when display=True, if available)
+    sim = Simulator(e, update_delay=0.1, display=False)  # create simulator (uses pygame when display=True, if available)
     # NOTE: To speed up simulation, reduce update_delay and/or set display=False
 
     sim.run(n_trials=100)  # run for a specified number of trials
