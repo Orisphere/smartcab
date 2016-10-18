@@ -17,10 +17,11 @@ class LearningAgent(Agent):
 	self.epsilon = 0.1
 	self.alpha = 1
 	self.QTable = {}
+	self.penalty = 0
+	self.steps = 0
 
     def reset(self, destination=None):
         self.planner.route_to(destination)
-        
 	# TODO: Prepare for a new trip; reset any variables here, if required
 
     def update(self, t):
@@ -31,6 +32,7 @@ class LearningAgent(Agent):
         
 	# TODO: Update state
 	self.state = (inputs['light'], inputs['oncoming'], inputs['left'], self.next_waypoint)
+	
 	if self.state not in self.QTable:
 		self.QTable[self.state] = {None: 12, 'left': 12, 'right': 12, 'forward': 12}
 	
@@ -54,11 +56,19 @@ class LearningAgent(Agent):
         
 	# Execute action and get reward
         reward = self.env.act(self, action)
+	
+	self.steps += 1
+	if reward < 0:
+		self.penalty += 1
 
         # TODO: Learn policy based on state, action, reward
         new_inputs = self.env.sense(self) 
         new_waypoint = self.planner.next_waypoint() 
 	next_state = (new_inputs['light'], new_inputs['oncoming'], new_inputs['left'], new_waypoint) 
+	
+	if next_state not in self.QTable:
+		self.QTable[next_state] = {None: 12, 'left': 12, 'right': 12, 'forward': 12}
+
 	q_prime = max(self.QTable[next_state].values())
 	old_q = self.QTable[self.state][action]
 	self.QTable[self.state][action] = old_q + self.alpha*(reward + self.gamma*q_prime - old_q) 
@@ -75,12 +85,17 @@ def run():
     # NOTE: You can set enforce_deadline=False while debugging to allow longer trials
 
     # Now simulate it
-    sim = Simulator(e, update_delay=0.1, display=True)  # create simulator (uses pygame when display=True, if available)
+    sim = Simulator(e, update_delay=0, display=False)  # create simulator (uses pygame when display=True, if available)
     # NOTE: To speed up simulation, reduce update_delay and/or set display=False
 
     sim.run(n_trials=100)  # run for a specified number of trials
     # NOTE: To quit midway, press Esc or close pygame window, or hit Ctrl+C on the command-line
 
+    #print "Penalty is " + str(a.penalty)
+    #print "Total steps is " + str(a.steps)
+    
+    #for k in  a.QTable:
+    #	print str(k) + " " + str(a.QTable[k])
 
 if __name__ == '__main__':
     run()
