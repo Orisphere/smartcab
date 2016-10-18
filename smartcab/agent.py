@@ -30,7 +30,7 @@ class LearningAgent(Agent):
         deadline = self.env.get_deadline(self)
         
 	# TODO: Update state
-        self.state = (inputs['light'], inputs['oncoming']==None or inputs['oncoming']=='left', inputs['left']=='forward', self.next_waypoint)
+	self.state = (inputs['light'], inputs['oncoming'], inputs['left'], self.next_waypoint)
 	if self.state not in self.QTable:
 		self.QTable[self.state] = {None: 12, 'left': 12, 'right': 12, 'forward': 12}
 	
@@ -56,7 +56,10 @@ class LearningAgent(Agent):
         reward = self.env.act(self, action)
 
         # TODO: Learn policy based on state, action, reward
-	q_prime = max(self.QTable[self.state].values())
+        new_inputs = self.env.sense(self) 
+        new_waypoint = self.planner.next_waypoint() 
+	next_state = (new_inputs['light'], new_inputs['oncoming'], new_inputs['left'], new_waypoint) 
+	q_prime = max(self.QTable[next_state].values())
 	old_q = self.QTable[self.state][action]
 	self.QTable[self.state][action] = old_q + self.alpha*(reward + self.gamma*q_prime - old_q) 
 	#print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
